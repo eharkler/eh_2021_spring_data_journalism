@@ -37,3 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Add DS_Store ignore code
+.DS_Store
+
+
