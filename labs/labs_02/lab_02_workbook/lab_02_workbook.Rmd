@@ -146,6 +146,8 @@ Here are some great resources for getting help with loading data using readr.
 In the empty codeblock below, read in the Baltimore data and store it as an object called acros_md_baltimorecity
 
 ```{r}
+# Read in Baltimore City data
+arcos_md_baltimorecity <- read_csv("data/arcos-md-baltimore-city-24510-pharmacy.csv")
 
 ```
 
@@ -171,6 +173,8 @@ glimpse(arcos_wv_mingo)
 **Task (Write Code and Run It)**: Now it's your turn. In the empty codeblock below, use the `glimpse()` function to get a sense of the Baltimore data you loaded above. 
 
 ```{r}
+# use glimpse() fn on Baltimore data
+glimpse(arcos_md_baltimorecity)
 
 ```
 
@@ -192,7 +196,7 @@ arcos_wv_mingo
 **Task (Write Code and Run It)**: Now it's your turn. In the empty codeblock below, display the Baltimore data in the markdown document. 
 
 ```{r}
-
+arcos_md_baltimorecity
 ```
 
 ### Option 3: open the data from the environment window
@@ -253,6 +257,8 @@ arcos_wv_mingo_pharmacies <- arcos_wv_mingo %>%
 
 ```{r}
 
+arcos_md_baltimorecity_pharmacies <- arcos_md_baltimorecity %>%
+  select(buyer_name)
 
 ```
 
@@ -288,6 +294,7 @@ arcos_wv_mingo_trimmed <- arcos_wv_mingo %>%
 
 ```
 
+
 **Details in Video**: I'll show you how the columns have been re-ordered, and also what happened when we reuse an object name. I'll also show you an alternative way of selecting the same five columns by excluding the first two columns.  (My notes: show all that)
 
 There's a lot more we can do with `select()`, but that's enough to get started.  To end this section, one last task for you to complete. 
@@ -295,7 +302,8 @@ There's a lot more we can do with `select()`, but that's enough to get started. 
 **Task (Write Code and Run it)**: In the empty codeblock below, select the last five columns of the Baltimore data, and store it as an object called arcos_wv_baltimorecity_trimmed.  
 
 ```{r}
-
+arcos_md_baltimorecity_trimmed <- arcos_md_baltimorecity %>%
+  select(buyer_name,buyer_dea_no,buyer_city,total_dosage_unit,total_records)
 
 ```
 
@@ -365,9 +373,15 @@ arcos_wv_mingo_sorted <- arcos_wv_mingo_trimmed %>%
 **Task (Write Code and Run It)**: Now it's your turn. Write the code below to answer the question: "Which pharmacy in Baltimore City, Maryland had the most pills sent to it between 2006 and 2014?" Hint: use the arcos_md_baltimorecity_trimmed dataframe as a starting point to answer this question.
 
 ```{r}
+#Answer: Newcare Home Health Services
 
+#creates a new dataframe called sorted, arranges it in descending order based on # of pills
 
+arcos_md_baltimorecity_sorted <- arcos_md_baltimorecity_trimmed %>%
+  arrange(desc(total_dosage_unit))
 ```
+
+
 
 **Details in Video**: We'll review the answer. 
 
@@ -399,14 +413,21 @@ Answer the question below by writing code in the empty codeblock.  Edit the comm
 **Task (Write Code and Run It)**: 1. In Baltimore City, which pharmacy got the most shipments between 2006 and 2014? How many shipments did it get?  Hint: the total_records column reflects the number of shipments
 
 ```{r}
-# Answer to question 1: 
+# Answer to question 1: Giant Pharmacy 166
+
+arcos_md_baltimorecity_trimmed_sorted <- arcos_md_baltimorecity_trimmed %>%
+  arrange(desc(total_records))
 
 ```
 
 **Task (Write Code and Run It)**: 2. In Baltimore City, which pharmacy got the smallest number of pills between 2006 and 2014? How many pills did it get?  Hint: the total_dosage_unit column reflects the number of pills.
 
 ```{r}
-# Answer to question 2: 
+# Answer to question 2: OSHINSKY, ALAN E MD & JAKOBOVITS, JULIAN MD got 4 pills.
+
+arcos_md_baltimorecity_trimmed_sorted <-
+  arcos_md_baltimorecity_trimmed %>%
+    arrange(total_dosage_unit)
 
 ```
 
