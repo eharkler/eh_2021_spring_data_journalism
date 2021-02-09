@@ -429,6 +429,8 @@ arcos_md_baltimorecity_trimmed_sorted <-
   arcos_md_baltimorecity_trimmed %>%
     arrange(total_dosage_unit)
 
+arcos_md_baltimorecity_trimmed_sorted
+
 ```
 
 ## You're Done
