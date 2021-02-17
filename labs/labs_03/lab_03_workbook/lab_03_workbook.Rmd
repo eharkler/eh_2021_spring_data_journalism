@@ -469,14 +469,14 @@ covid_texas_may_aug_case_pct_change
 
 covid_oregon_april_aug_death_pct_change <- covid_county_monthly_death_rate %>%
   select(county, state, d_2020_04_30, d_2020_08_30) %>%
-    mutate(april_aug_pct_change = (d_2020_08_30 - d_2020_04_30)/ d_2020_04_30) %>%
+    mutate(april_aug_pct_change = (d_2020_08_30 - d_2020_04_30)/ d_2020_04_30*100) %>%
   filter(state == "Oregon") %>%
   arrange(desc(april_aug_pct_change))
 
 
 covid_oregon_april_aug_death_pct_change
 
-#A: Polk County, Oregon had the greatest % change in cumulative death rate between April and August. It increased by 13%.
+#A: Polk County, Oregon had the greatest % change in cumulative death rate between April and August. It increased by 1300%.
 
 ```
 
