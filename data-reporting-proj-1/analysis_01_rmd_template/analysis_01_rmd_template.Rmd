@@ -87,7 +87,12 @@ unarmed_women_by_race <- fatal_police_shootings %>%
 # Creates new dataframe pulling from the dataframe made above. Uses count() function to get a count of how many of each race have died. sort = TRUE displays this count from largest to smallest
 
 counts_of_race <- unarmed_women_by_race %>%
-  count(race, race, wt = NULL, sort = TRUE, name = NULL)
+  group_by(race) %>%
+  count() %>%
+  arrange(desc(n))
+  #count(race, race, wt = NULL, sort = TRUE, name = NULL)
+  
+
 
 # Display results of code below this codeblock
 unarmed_women_by_race
@@ -106,6 +111,15 @@ counts_of_race
 
 ```{r}
 # Put code to reverse engineer sentence here
+
+
+# Step 1: Get % of Black women compared to all people in the dataset
+
+# Step 2: Get % of Black women compared to all women in the dataset
+
+# Step 3: Get % of Black unarmed women compared to all unarmed people in the dataset.
+
+
 
 # Display results of code below this codeblock
 
