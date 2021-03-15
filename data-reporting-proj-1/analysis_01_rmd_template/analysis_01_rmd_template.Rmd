@@ -31,6 +31,7 @@ Loading required libraries for this analysis.
 
 # Load up the tidyverse
 library(tidyverse)
+library(dplyr)
 
 ```
 
@@ -74,7 +75,7 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 * **Sentence text**: “Since 2015, police have killed 26 unarmed women, including Taylor. Of those, 14 were White, seven were Black, four were Hispanic and one’s race was unknown. While about twice as many White women were shot and killed as Black women, White women account for five times the Black female population.”
 
-* **Analysis summary**: Since this article was been written, two more unarmed women were shot and killed by police. So, the true count is 28 unarmed women, not 26. The two most recent deaths were Ashi Babbitt on Jan. 6, 2021 and Evatt Hernandez on Dec. 9, 2020. The race count in the above sentence is very close, but yes, since the article was published, it changed. There are still seven Black women and one woman whose race is unknown, but there are now 15 White women and five Hispanic women. The disparity they point out in the original sentence is still true given the disproportionate population difference between White women and Black women.
+* **Analysis summary**: Since this article was published , two more unarmed women were shot and killed by police. So, the true count is 28 unarmed women, not 26. The two most recent deaths were Ashi Babbitt on Jan. 6, 2021 and Evatt Hernandez on Dec. 9, 2020. The race count in the above sentence is very close, but yes, since the article was published, it changed. There are still seven Black women and one woman whose race is unknown, but there are now 15 White women and five Hispanic women. The disparity they point out in the original sentence is still true given the disproportionate population difference between White women and Black women.
 
 ```{r}
 # Put code to reverse engineer sentence here:
@@ -90,7 +91,7 @@ counts_of_race <- unarmed_women_by_race %>%
   group_by(race) %>%
   count() %>%
   arrange(desc(n))
-  #count(race, race, wt = NULL, sort = TRUE, name = NULL)
+  # Also can use count(race, race, wt = NULL, sort = TRUE, name = NULL) instead
   
 
 
@@ -107,22 +108,75 @@ counts_of_race
 
 * **Sentence text**: “Since 2015, Black women have accounted for less than 1 percent of the overall fatal shootings in cases where race was known. But within this small subset, Black women, who are 13 percent of the female population, account for 20 percent of the women shot and killed and 28 percent of the unarmed deaths.”
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: I was able to confirm their first finding (Black women account for less than 1% of total fatal shootings) -- they make up 0.8%. Their second finding, that Black women account for 20% of all women fatally shot by police, I was unable to confirm. I got 18%, which is close. I suspect this is because the data has changed since the original article came out. Finally, I was unable to confirm their third finding, that Black women account for 28% of unarmed women deaths. The actual sentence is misleading, since I originally thought they meant 28% of all unarmed deaths regardless of gender. Looking at unarmed Black women to only unarmed women, we see a closer percentage, 25%. I suspect this difference is also because of the change in data since publication.
 
 ```{r}
-# Put code to reverse engineer sentence here
-
+# Put code to reverse engineer sentence here:
 
 # Step 1: Get % of Black women compared to all people in the dataset
 
+percent_black_women_killed_to_total <- fatal_police_shootings %>%
+  group_by(gender, race) %>%
+  count() %>%
+  ungroup() %>%
+  mutate(total_shootings = sum(n)) %>%
+  mutate(percent_of_total_shootings = (n/total_shootings)*100) %>%
+  filter(gender == "F" & race == "B")
+
+
 # Step 2: Get % of Black women compared to all women in the dataset
 
-# Step 3: Get % of Black unarmed women compared to all unarmed people in the dataset.
+percent_black_women_killed_to_women <- fatal_police_shootings %>%
+  group_by(gender, race) %>%
+  count() %>%
+  ungroup() %>%
+  filter (gender == "F") %>%
+  mutate(total_women_killed = sum(n)) %>%
+  mutate(percent_of_total_women_killed = (n/total_women_killed)*100) %>%
+  filter(gender == "F" & race == "B")
+
+# Step 3: Get % of Black unarmed women compared to all unarmed women in the dataset.
+
+percent_unarmed_black_women_killed_to_unarmed_women <- fatal_police_shootings %>%
+  # First, group the data by race, gender and armed variables. Those are all of the variables we're considering for this question.
+  group_by(race, gender, armed) %>%
+  # Next, generate counts -- the n column -- of each race, gender & armed combo
+  count() %>%
+  # Now that we have the number of each group combo, we need to get the total of unarmed women, so we'll ungroup and filter for unarmed women.
+  ungroup() %>%
+  filter(gender == "F" & armed == "unarmed") %>%
+  # To get the total, we'll mutate to create a column called "total_unarmed_women_killed" that equals the sum of all of the values in the n column (the counts).
+  mutate(total_unarmed_women_killed = sum(n)) %>%
+  # We see now that 28 unarmed women have been killed total since 2015. That total is next to every row, so now we just need to calculate the percentage by dividing n with the totals. I'll do this by creating a new column with mutate that represents the percentage.
+  mutate(percent_of_total_unarmed_women_killed = (n/total_unarmed_women_killed)*100) %>%
+  # Now, we've got the % of each race of unarmed women are compared to the total # of unarmed women. Let's look at just Black women to answer the last question.
+  filter(gender == "F" & race == "B")
 
 
 
-# Display results of code below this codeblock
 
+# Display results of code below this codeblock:
+
+# Claim 1: Black women make up 0.80% of all fatal police shootings. The article says this, that they make up less than 1% of the total.
+percent_black_women_killed_to_total
+
+# Claim 2: Black women make up 18.15% of women fatally shot by police. The article says they make up 20% of all women fatally shot.
+percent_black_women_killed_to_women
+
+# Claim 3: Unarmed Black women make up 25% of all fatal police shootings of unarmed women. The article says they make up 28% of the unarmed women fatal shootings.
+percent_unarmed_black_women_killed_to_unarmed_women
+
+
+
+
+
+
+#Alternative way:
+#unarmed_women <- black_unarmed_women_killed %>%
+ # bind_cols(unarmed_women_killed) %>%
+  #mutate(percent_black_unarmed_women_killed = black_unarmed_women/unarmed_women_killed)
+
+#unarmed_women
 ```
 
 ### Sentence 3
@@ -144,26 +198,41 @@ counts_of_race
 
 * **Sentence text**: “Since The Washington Post began tracking fatal shootings by police in 2015, officers have fatally shot 247 women out of the more than 5,600 people killed overall.”
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: Since the time of the article in which the sentence was published, 33 more women have been fatally shot by police and the total of people fatally shot by police has rose to 6,087. 
 
 ```{r}
 # Put code to reverse engineer sentence here
+total_women_killed <- fatal_police_shootings_data %>%
+  group_by(gender) %>%
+  count()
+total_killed <- fatal_police_shootings_data %>%
+  count()
 
 # Display results of code below this codeblock
-
+total_women_killed
+total_killed
 ```
+
 
 ### Sentence 5
 
 * **Sentence text**: “The starkest difference between women and men is the rate: Women account for about half the population, but 4 percent of the killings.”
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: My findings show that women account for 4.4 percent of killings between male, female and one N/A. My findings are slightly higher than the original question, maybe due to more killings that have happened since this data was published.  There were 5816 men killed, 270 females and 1 N/A. A total of 6,087. Next, divide 270 by 6,087 multiply it by 100 and get 4.44 percent. 
 
 ```{r}
 # Put code to reverse engineer sentence here
 
+gender_killed <- fatal_police_shootings_data %>%
+ group_by(gender) %>%
+summarise(amount_killed = n()) %>%
+  arrange(desc(amount_killed))
+
 # Display results of code below this codeblock
 
+gender_killed 
+
 ```
+
 
 -30-
