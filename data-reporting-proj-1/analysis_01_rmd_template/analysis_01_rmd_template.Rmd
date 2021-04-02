@@ -1,6 +1,6 @@
 ---
-title: "Data Analysis 01 Template"
-author: "Student names here"
+title: "Data Analysis: The Post's Fatal Force"
+author: "Natalie Drum, Eric Harkleroad, Pierce Panagakos"
 date: "3/2/2021"
 output:
   html_document:
@@ -179,18 +179,6 @@ percent_unarmed_black_women_killed_to_unarmed_women
 #unarmed_women
 ```
 
-### Sentence 3
-
-* **Sentence text**: “About 31 percent, or 77, of the 247 women fatally shot by police since 2015 had mental health issues, compared to 22 percent of the 5,362 men killed.”
-
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
-
-```{r}
-# Put code to reverse engineer sentence here
-
-# Display results of code below this codeblock
-
-```
 
 ### Sentence 4
 
@@ -202,10 +190,10 @@ percent_unarmed_black_women_killed_to_unarmed_women
 
 ```{r}
 # Put code to reverse engineer sentence here
-total_women_killed <- fatal_police_shootings_data %>%
+total_women_killed <- fatal_police_shootings %>%
   group_by(gender) %>%
   count()
-total_killed <- fatal_police_shootings_data %>%
+total_killed <- fatal_police_shootings %>%
   count()
 
 # Display results of code below this codeblock
@@ -214,25 +202,28 @@ total_killed
 ```
 
 
+
 ### Sentence 5
 
-* **Sentence text**: “The starkest difference between women and men is the rate: Women account for about half the population, but 4 percent of the killings.”
+* **Sentence text**: "The starkest difference between men and women is the rate: Women account for about half the population but 4 percent of the killings."
 
 * **Analysis summary**: My findings show that women account for 4.4 percent of killings between male, female and one N/A. My findings are slightly higher than the original question, maybe due to more killings that have happened since this data was published.  There were 5816 men killed, 270 females and 1 N/A. A total of 6,087. Next, divide 270 by 6,087 multiply it by 100 and get 4.44 percent. 
 
+
 ```{r}
+
 # Put code to reverse engineer sentence here
-
-gender_killed <- fatal_police_shootings_data %>%
+gender_killed <- fatal_police_shootings %>%
  group_by(gender) %>%
-summarise(amount_killed = n()) %>%
-  arrange(desc(amount_killed))
-
+ summarise(amount_killed = n()) %>%
+ arrange(desc(amount_killed)) %>%
+ mutate(total_killed = sum(amount_killed)) %>%
+ mutate(pct_total_killed = amount_killed/total_killed*100)
 # Display results of code below this codeblock
-
 gender_killed 
 
 ```
+
 
 
 -30-
