@@ -1,0 +1,90 @@
+---
+title: "working_west_virginia"
+author: "Eric Harkleroad"
+date: "4/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load in the required packages to clean the data
+
+```{r}
+library(tidyverse)
+library(vembedr)
+library(janitor)
+library(dplyr)
+library(tidycensus)
+
+census_api_key("549950d36c22ff16455fe196bbbd01d63cfbe6cf")
+
+```
+
+# Read in the dirty raw data
+
+```{r}
+ retailer_sales_data <- read.csv("data/west_virginia/retailer_sales_data.csv") %>%
+  mutate_all(funs(ifelse(is.na(.), 0, .))) %>%
+  clean_names() %>%
+  rename(id = i_retailer_id) %>%
+  mutate(week_ending = as_date (week_ending, format = "%m/%d/%y")) %>%
+  mutate(year_name = year(week_ending)) %>%
+  mutate(year_name = as.character(year_name)) %>%
+  select(-week_ending) %>%
+  mutate(id = as.character(id)) %>%
+  mutate(lotto_america = as.numeric(lotto_america), mega_million = as.numeric(mega_million), mega_plier = as.numeric(mega_plier)) %>%
+  group_by(id, year_name) %>%
+  summarise(across(where(is.numeric), ~sum(.x, na.rm = TRUE)))  %>%
+  mutate(all_games_total = instant + daily_3 + daily_4 + cash_25 + hot_lotto + sizzler + powerball + powerplay + mega_million + mega_plier + just_the_jackpot + lotto_america + all_star_bonus)
+                                                                                      
+
+new_retailer_data <- read.csv("data/west_virginia/new_retailer_list.csv") %>%
+  clean_names() %>%
+  mutate(id = as.character(id))
+
+joined_data <- retailer_sales_data %>%
+  inner_join(new_retailer_data)
+
+
+```
+
+# Clean the data
+
+```{r}
+
+# create distinct list of retailers present in sales data
+retailer_id_sales <- retailer_sales_data %>%
+  select (retailer_id) %>%
+  distinct()
+
+# create distinct list of retailers present in dataframe of retailers
+new_retailer_id_data <- new_retailer_data %>%
+  select(id) %>%
+  distinct()
+
+# create a list of retailer ids present in dataframe of retailers but not in sales
+ids_not_in_sales <- new_retailer_id_data %>%
+  anti_join(retailer_id_sales, by = c("id" = "retailer_id"))
+
+# create a list of retailer ids present in dataframe of sales but not in retailers
+ids_not_in_retailer_list <- retailer_id_sales %>%
+  anti_join(new_retailer_id_data, by = c("retailer_id" = "id")) %>%
+  distinct()
+
+
+
+
+# inner join of retailer ids to find locations
+
+joined_ids <- retailer_sales_data %>%
+  left_join(retailer_sales_data, new_retailer_data)
+
+
+
+
+
+```
+
+
