@@ -1,4 +1,4 @@
-﻿ID,Agent,LStreet,LCity,LState,LZip,Deactivation,County
+﻿id,Agent,LStreet,LCity,LState,LZip,Deactivation,County
 100000,Go Mart #27,401 16th St,Dunbar,WV,25064,30-Jun-21,KANAWHA
 100587,Go Mart #07,722 Bigley Ave,Charleston,WV,25302,30-Jun-21,KANAWHA
 100596,Bigley Piggly Wiggly,10 Spring St W,Charleston,WV,25302,30-Jun-21,KANAWHA
